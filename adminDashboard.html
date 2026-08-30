@@ -273,46 +273,41 @@
         function closePopup(){
             document.getElementById("popup").style.display = "none";
 
-            // 1. เคลียร์ค่าในช่อง Input และ Dropdown ของแถวแรกสุดให้กลับเป็นค่าเริ่มต้น
             const firstRow = document.querySelector('#waste-input .row');
             if (firstRow) {
                 firstRow.querySelector('.waste-types').value = 'เลือก';
                 firstRow.querySelector('input[type="text"]').value = '';
             }
 
-            // 2. ลบแถวขยะที่ถูกกดเพิ่ม (+ เพิ่มรายการ) ออกให้หมด เหลือไว้แค่แถวแรกสุดแถวเดียว
             const container = document.getElementById('waste-input');
             const rows = container.querySelectorAll('.row');
-            // วนลูปเริ่มจากแถวที่ 2 เป็นต้นไปแล้วลบทิ้ง
             for (let i = 1; i < rows.length; i++) {
                 rows[i].remove();
             }
         }
 
         function addWasteRow() {
-        // ดึงตัวกล่องแม่ และดึงเนื้อหาจาก Template
+        
             const container = document.getElementById('waste-input');
             const template = document.getElementById('waste-tpl').content;
     
-    // โคลน (Clone) กล่องใหม่ขึ้นมา
             const newRow = template.cloneNode(true);
     
-    // นำกล่องใหม่ไปต่อท้ายในกล่องแม่
             container.appendChild(newRow);
         }
 
         async function Process() {
-    // 1. ดึงกล่องรายการทั้งหมดที่อยู่ใน Form
+    
             const rows = document.querySelectorAll('#waste-input .row');
             let wasteData = [];
 
-    // 2. วนลูปเพื่อเก็บข้อมูลแต่ละแถว
+    
             rows.forEach(row => {
                 const wasteName = row.querySelector('.waste-types').value;
                 const weightInput = row.querySelector('input[type="text"]').value;
                 const weight = parseFloat(weightInput);
 
-        // ตรวจสอบว่าผู้ใช้เลือกขยะและกรอกตัวเลขถูกต้อง
+    
                 if (wasteName !== 'เลือก' && !isNaN(weight) && weight > 0) {
                     wasteData.push({ 
                         waste_name: wasteName, 
@@ -321,13 +316,10 @@
                 }
             });
 
-    // ตรวจสอบว่ามีข้อมูลถูกเลือกอย่างน้อย 1 รายการ
-            if (wasteData.length === 0) {
-                alert('กรุณาเลือกประเภทขยะและกรอกน้ำหนักให้ถูกต้องอย่างน้อย 1 รายการ');
-                return;
-            }
+    
+            
 
-    // 3. ส่งข้อมูลไปให้ Backend คำนวณ (สมมติว่า API ของคุณชื่อ /api/process-waste)
+    
             try {
                 const response = await fetch('/api/process-waste', {
                     method: 'POST',
@@ -341,8 +333,8 @@
 
                 if (response.ok) {
                     alert(`บันทึกสำเร็จ! ราคารวมทั้งหมด: ${result.total_price} บาท`);
-                    closePopup();    // ปิดหน้าฟอร์ม
-                    closeProcess();  // ปิดหน้า Detail
+                    closePopup();   
+                    closeProcess(); 
                     loaddetail(); 
                 } else {
                     alert('เกิดข้อผิดพลาด: ' + result.error);
@@ -367,7 +359,7 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    alert('ส่งแจ้งเตือนให้ลูกค้าสำเร็จ!');
+                    alert('ส่งแจ้งเตือนให้ลูกค้าเรียบร้อย!');
                 } else {
                     alert('ไม่สามารถส่งแจ้งเตือนได้: ' + data.error);
                 }
