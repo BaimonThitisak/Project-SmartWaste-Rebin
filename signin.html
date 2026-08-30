@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReBin</title>
+    <link rel="stylesheet" href="signin.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+    <div class="container">
+        <div class="green-panel">
+            <div class="greenP-text">
+                <h3>Welcome to</h3>
+                <h1>ReBin</h1>
+            </div>
+            <div class="logo">
+                <img src="img/mintLOGO.png" >
+            </div>
+            
+                
+            <button onclick="document.location='index.html'" class="login-button">Log In</button>
+            
+        </div>
+        <div class="white-panel">
+            <div class="whiteP-text">
+                <h2>Sign In to ReBin</h2>
+            </div>
+            <form id="signinForm">
+                <div class="row">
+                    <div class="input">
+                        <label>Name</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    <div class="input">
+                        <label>Username</label>
+                        <input type="text" id="username" required>
+                    </div>
+                </div>
+                <div class="input">
+                    <label>Email</label>
+                    <input type="email" id="email" required>
+                </div>
+
+                <div class="input">
+                    <label>Password</label>
+                    <input type="password" id="password" required>
+                </div>
+
+                <button class="signin-button">SIGN UP</button>
+                
+            
+            </form>
+            
+        </div>  
+    
+
+    <script>
+        document.getElementById('signinForm').addEventListener('submit', async (e) => {
+            
+            e.preventDefault(); //กันรีเฟรชเอง
+
+            // ดึงค่าจากinput
+            const name = document.getElementById('name').value;
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, username, email, password })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert(result.message); 
+                    
+                    window.location.href = 'index.html'; 
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + (result.error || result.message));
+                }
+            } catch (error) {
+                console.error(error);
+                alert('ไม่สามารถเชื่อมต่อ Server ได้');
+            }
+        });
+    </script>
+</body>
+</html>

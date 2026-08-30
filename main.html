@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReBin</title>
+    <link rel="stylesheet" href="main.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+    
+    <div class="container">
+        <div class="top-bar">
+            <div class="logo" onclick="location.reload()">
+                <img src="img/white-logo.png" >
+            </div>
+
+            <div class="main" onclick="location.reload()">
+                <p>Main</p>
+            </div>  
+
+            <div class="space1">
+                <p>|</p>
+            </div>
+
+            <div class ="price" onclick="document.location='price.html'">
+                <p>Price</p>
+            </div>
+
+            <div class="space2">
+                <p>|</p>
+            </div>
+
+            <div class="booking" onclick="document.location='booking.html'">
+                <p>Booking</p>
+            </div>
+
+            <div class="space3">
+                <p>|</p>
+            </div>
+                           
+            <div class="wallet"  onclick="document.location='wallet.html'">
+                <p>Wallet</p>
+            </div>
+            
+            <div class="space4">
+                <p>|</p>
+            </div>
+
+            <div class="exit" onclick="openExitPopup()">
+                <img src="img/square-arrow-right-exit.png" >
+
+            </div>                   
+            
+        </div>
+        <div class="content">
+            <div class="row1">
+                <div class="welcome-box">
+                    <h1>Welcome</h1>
+                    <h2>to</h2>
+                    <img src="img/rebin-logo.png" >
+            
+                </div>
+                <div class="Title">
+                    <div class="header">
+                        <h1>ReBin — ธนาคารขยะอัจฉริยะเพื่อชุมชนยั่งยืน</h1>
+                        <p>ยกระดับการคัดแยกและขายขยะรีไซเคิลด้วย ReBin แพลตฟอร์มธนาคารขยะดิจิทัลที่ช่วยให้คุณเช็กราคากลางได้แบบเรียลไทม์ นัดหมายรถรับซื้อขยะถึงหน้าบ้าน พร้อมสะสมยอดเงินฝากเข้ากระเป๋าเงิน ReBin Wallet</p>
+
+                    </div>
+                </div>
+            </div>
+            <div class="Info-box">
+                <h1>Account Information</h1>
+                <p>Username : <span id="username"></span></p>
+                <p>Name : <span id="name"></span></p>
+                <p>Email : <span id="email"></span></p>
+            </div>
+        </div>
+        <div id="pop-up-exit" class="exitPopup">
+            <div class="exitPopup-content">
+                <h3 style="color: #4c8172;">Are you sure you want to exit?</h3>
+                <div class="exitPopup-buttons">
+                    <button class="yes-button" onclick="document.location='index.html'">Yes</button>
+                    <button class="no-button" onclick="closeExitPopup()">No</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="number-popup" class="numPopup">
+            <div class="numPop-content">
+                <h3 style="color: #4c8172;">Input Your Number</h3>
+                <input type="text" id="Unumber" class="Unumber">
+                <div class="numPop-button">
+                    <button class="num-yes" onclick="phone_update()">Confirm</button>
+                    <button class="num-no" onclick="closeNumPopup()">Cancle</button>
+                </div>
+            </div>
+        </div>
+
+    </div>  
+
+
+
+
+    <script>
+        accinfo();
+
+        function openExitPopup() {
+            document.getElementById("pop-up-exit").style.display = "flex";
+        }
+
+        function closeExitPopup() {
+            document.getElementById("pop-up-exit").style.display = "none";
+        }
+
+        function openNumPopup(){
+            document.getElementById("number-popup").style.display = "flex";
+        }
+        function closeNumPopup(){
+            document.getElementById("number-popup").style.display = "none";
+        }
+
+        
+        async function accinfo() {
+            try {
+        const userId = localStorage.getItem('userId');
+        const response = await fetch(`/api/user/${userId}`);
+        const userData = await response.json();
+
+        if (response.ok) {
+            document.getElementById('username').innerText = userData.username || '-';
+            document.getElementById('name').innerText = userData.name || '-';
+            document.getElementById('email').innerText = userData.email || '-';
+        }
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+    }
+        }
+        
+        
+        // document.addEventListener('DOMContentLoaded', () => {
+        //     const userId = localStorage.getItem('userId');
+        //     const userData = JSON.parse(localStorage.getItem('user'));
+
+            
+        //     document.getElementById('username').innerText = userData.username ;
+        //     document.getElementById('name').innerText = userData.name ;
+        //     document.getElementById('email').innerText = userData.email ;
+        //     document.getElementById('phone-number').innerText = userData.phone_number || 'ไม่มีข้อมูล';
+        // });
+
+        
+        
+    </script>
+</body>
+</html>

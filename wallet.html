@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReBin</title>
+    <link rel="stylesheet" href="wallet.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+    <div class="container">
+        <div class="top-bar">
+            <div class="logo" onclick="document.location='main.html'">
+                <img src="img/white-logo.png" >
+            </div>
+
+            <div class="main" onclick="document.location='main.html'">
+                <p>Main</p>
+            </div>  
+
+            <div class="space1">
+                <p>|</p>
+            </div>
+
+            <div class ="price" onclick="document.location='price.html'">
+                <p>Price</p>
+            </div>
+
+            <div class="space2">
+                <p>|</p>
+            </div>
+
+            <div class="booking" onclick="document.location='booking.html'">
+                <p>Booking</p>
+            </div>
+
+            <div class="space3">
+                <p>|</p>
+            </div>
+                           
+            <div class="wallet"  onclick="location.reload()">
+                <p>Wallet</p>
+            </div>
+            
+            <div class="space4">
+                <p>|</p>
+            </div>
+
+            <div class="exit" onclick="openExitPopup()">
+                <img src="img/square-arrow-right-exit.png" >
+
+            </div>                   
+            
+        
+            
+
+        </div>
+
+        <div class="wallet-panel">
+            <div class="bank-icon">
+                <img src="img/wallet-2.png">
+            </div>
+
+            <div class="wallet-text">
+                <h1>wallet</h1>
+                <h2><span id="wallet-name">กำลังโหลด...</span></h2>
+                <p><span id="wallet-amount">0.00</span> THB</p>
+            </div>
+        </div>
+        <div class="withgraw-panel">
+            <div class="withdraw-text">
+                <h1> WithDraw</h1>
+                <div class="bank-group">
+                    <label>ธนาคารปลายทาง:</label>
+                    <select id="bank">
+                        <option value="SCB">ธนาคารไทยพาณิชย์ (SCB)</option>
+                        <option value="KBANK">ธนาคารกสิกรไทย (KBANK)</option>
+                        <option value="BBL">ธนาคารกรุงเทพ (BBL)</option>
+                        <option value="KTB">ธนาคารกรุงไทย (KTB)</option>
+                        <option value="BAY">ธนาคารกรุงศรีอยุธยา (BAY)</option>
+                    </select>
+                </div>
+                <p>หมายเลขบัญชีธนาคาร</p>
+                <input type="text" id="bank-num">
+                <p>จำนวนเงิน</p>
+                <input type="text" id="amount">
+                <button class="withdraw-button" onclick="withdrawProcess()">Withdraw</button>
+            </div>
+        </div>
+
+        <div id="pop-up-exit" class="exitPopup">
+            <div class="exitPopup-content">
+                <h3 style="color: #4c8172;">Are you sure you want to exit?</h3>
+                <div class="exitPopup-buttons">
+                    <button class="yes-button" onclick="document.location='index.html'">Yes</button>
+                    <button class="no-button" onclick="closeExitPopup()">No</button>
+                </div>
+            </div>
+        </div>
+    </div>  
+
+
+
+
+    <script>
+ 
+    function openExitPopup() {
+        document.getElementById("pop-up-exit").style.display = "flex";
+    }
+
+    function closeExitPopup() {
+        document.getElementById("pop-up-exit").style.display = "none";
+    }
+
+    window.onload = async () => {
+        const userId = localStorage.getItem('userId');
+        try {
+            const res = await fetch(`/api/user/${userId}`);
+            if (!res.ok) throw new Error('Failed to fetch user data');
+
+            const data = await res.json();
+            document.getElementById('wallet-name').innerText = data.name;
+            document.getElementById('wallet-amount').innerText = Number(data.wallet_balance || 0).toFixed(2);
+        } catch (err) {
+            console.error(err);
+            document.getElementById('wallet-name').innerText = 'ไม่สามารถโหลดข้อมูลได้';
+        }
+    };
+
+    
+
+    </script>
+
+</body>
+</html>

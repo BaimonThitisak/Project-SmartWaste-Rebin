@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReBin</title>
+    <link rel="stylesheet" href="adminDashboard.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+</head>
+<body>
+    <div class="container">
+        <div class="top-bar">
+            <div class="logo" onclick="document.location='main.html'">
+                <img src="img/white-logo.png" >
+            </div>
+
+            
+            <div class="exit" onclick="openExitPopup()">
+                <img src="img/square-arrow-right-exit.png" >
+
+            </div>                   
+            
+        </div>  
+
+        
+        
+        <div class="content">
+            <h1 class="head">UserBookDetail</h1>
+            <div id="bookdetail"></div>
+        </div>
+        
+        
+        <template id="detail-tpl">
+            <div class="detail" >
+                <div class="info">
+                    <h1 class="id"></h1>
+                    <p class="name"></p>
+                </div>
+                <div class="status"></div>
+            </div>
+        </template>
+
+       <div id="process-popup" class="processPopup">
+            <div class="processPopup-content">
+                
+                <h1 class="title">Detail</h1>
+                
+                <div class="process-detail">
+                    <p id="popup-id">ID:</p>
+                    <p id="popup-name">ชื่อผู้นัดหมาย:</p>
+                    <p id="popup-tel">เบอร์โทร</p>
+                    <p id="popup-date">วันที่นัดหมาย:</p>
+                    <p id="popup-time">เวลาที่นัดหมาย</p>
+                    <p id="popup-status">สถานะ: </p>
+                    <p id="popup-location">สถานที่นัดหมาย:</p>
+
+
+                    <div id="map"></div>
+
+                </div>
+                
+                
+                <button class="coming" onclick="sendNoti('coming')">กำลังไป!!!</button>
+                
+                <div class="exitPopup-buttons">
+                    <button class="yes-button" onclick="openPopup()">Process</button>
+                    <button class="no-button" onclick="closeProcess()">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="popup" class="popup">
+            <div class="popup-content">
+                <div class="popup-detail">
+                    <form id="process">
+                        <div id="waste-input" class="input">
+                            <div class="row">
+                                
+                                <label>รายการขยะ: </label>
+                                <select  class="waste-types">
+                                    <option value="เลือก">เลือก</option>
+                                    <optgroup label="พลาสติก-กระดาษ">
+                                        <option value="พลาสติกรวม">พลาสติกรวม</option>
+                                        <option value="กระดาษลัง">กระดาษลัง</option>
+                                        <option value="ท่อ PVC ฟ้า">ท่อ PVC ฟ้า</option>
+                                    </optgroup>
+                                    <optgroup label="เหล็ก">
+                                        <option value="ลวด">ลวด</option>
+                                        <option value="เหล็กรวม">เหล็กรวม</option>
+                                        <option value="เหล็กหนา">เหล็กหนา</option>
+                                        <option value="เหล็กบาง">เหล็กบาง</option>
+                                    </optgroup>
+                                    <optgroup label="โหละ">
+                                        <option value="อลูมิเนียมกระป๋อง">อลูมิเนียมกระป๋อง</option>
+                                        <option value="อลูมิเนียมเพลท">อลูมิเนียมเพลท</option>
+                                        <option value="สแตนเลส">สแตนเลส</option>
+                                        <option value="ตะกั่ว">ตะกั่ว</option>
+                                    </optgroup>
+                                    <optgroup label="แก้ว">
+                                        <option value="แก้วขาว">แก้วขาว</option>
+                                        <option value="แก้วแดง">แก้วแดง</option>
+                                        <option value="แก้วรวม">แก้วรวม</option>
+                                    </optgroup>
+
+                                </select>
+
+                                
+                                    <label>น้ำหนัก: </label>
+                                    <input type="text">
+                                    <label>/กก</label>
+                                
+                                
+                            </div>
+                            
+                        </div>
+                    </form>
+                    <template id="waste-tpl">
+                            <div class="row">
+                                <label>รายการขยะ: </label>
+                                <select  class="waste-types">
+                                    <option value="เลือก">เลือก</option>
+                                    <optgroup label="พลาสติก-กระดาษ">
+                                        <option value="พลาสติกรวม">พลาสติกรวม</option>
+                                        <option value="กระดาษลัง">กระดาษลัง</option>
+                                        <option value="ท่อ PVC ฟ้า">ท่อ PVC ฟ้า</option>
+                                    </optgroup>
+                                    <optgroup label="เหล็ก">
+                                        <option value="ลวด">ลวด</option>
+                                        <option value="เหล็กรวม">เหล็กรวม</option>
+                                        <option value="เหล็กหนา">เหล็กหนา</option>
+                                        <option value="เหล็กบาง">เหล็กบาง</option>
+                                    </optgroup>
+                                    <optgroup label="โหละ">
+                                        <option value="อลูมิเนียมกระป๋อง">อลูมิเนียมกระป๋อง</option>
+                                        <option value="อลูมิเนียมเพลท">อลูมิเนียมเพลท</option>
+                                        <option value="สแตนเลส">สแตนเลส</option>
+                                        <option value="ตะกั่ว">ตะกั่ว</option>
+                                    </optgroup>
+                                    <optgroup label="แก้ว">
+                                        <option value="แก้วขาว">แก้วขาว</option>
+                                        <option value="แก้วแดง">แก้วแดง</option>
+                                        <option value="แก้วรวม">แก้วรวม</option>
+                                    </optgroup>
+
+                                </select>
+
+                                
+                                    <label>น้ำหนัก: </label>
+                                    <input type="text">
+                                    <label>/กก</label>
+                                
+                                <button type="button" onclick="this.parentElement.remove()">ลบ</button>    
+                            </div>
+                            
+                        
+                    </template>
+                </div>
+
+                <div class="exitPopup-buttons">
+                    <p onclick="addWasteRow()">+ เพิ่มรายการ</p>    
+                    <button class="yes-button" onclick="Process()">Process</button>
+                    <button class="no-button" onclick="closePopup()">Close</button>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="pop-up-exit" class="exitPopup">
+            <div class="exitPopup-content">
+                <h3 style="color: #4c8172;">Are you sure you want to exit?</h3>
+                <div class="exitPopup-buttons">
+                    <button class="yes-button" onclick="document.location='index.html'">Yes</button>
+                    <button class="no-button" onclick="closeExitPopup()">No</button>
+                </div>
+            </div>
+        </div>
+    </div>  
+
+    <script>
+
+        let map;
+        let marker;
+        let nowBookingId = null;
+        let currentLineId = null;
+
+
+        function openExitPopup() {
+            document.getElementById("pop-up-exit").style.display = "flex";
+        }
+
+        function closeExitPopup() {
+            document.getElementById("pop-up-exit").style.display = "none";
+        }
+
+        async function loaddetail() {
+            try {
+                const res = await fetch('/api/bookdetail');
+                const book = await res.json();
+                const container = document.getElementById('bookdetail');
+                const tpl = document.getElementById('detail-tpl').content;
+                container.innerHTML = '';
+                book.forEach(u => {
+                    
+                    const node = tpl.cloneNode(true);
+                    const detailBox = node.querySelector('.detail');
+                    node.querySelector('.id').textContent = `ID: ${u.id}`;
+                    node.querySelector('.name').textContent = u.bookname || '';
+                    
+                    const statusEl = node.querySelector('.status');
+                    const statusText = u.status || '';
+                    const statusClass = statusText.toString().toLowerCase();
+                    statusEl.textContent = statusText;
+                    if (statusClass) statusEl.classList.add(statusClass);
+                    
+                    detailBox.onclick = () => openProcess(u.id, u.bookname, statusText, u.latitude, u.longitude, u.booking_date, u.booking_time, u.booktel, u.line_id);
+
+                    container.appendChild(node);
+                });
+            } catch (err) {
+                console.error('Fail to load details', err);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loaddetail);
+        
+        function openProcess(id, name, status, lat, lng, date, time, tel, line_id) {
+            nowBookingId = id;
+            currentLineId = line_id;
+            document.getElementById('popup-id').textContent = `ID: ${id}`;
+            document.getElementById('popup-name').textContent = `Name: ${name || 'ไม่มีชื่อ'}`;
+            document.getElementById('popup-tel').textContent = `Number: ${tel}`;
+            document.getElementById('popup-status').textContent = `Status: ${status}`;
+            document.getElementById('popup-date').textContent = `Date: ${date ? new Date(date).toLocaleDateString('th-TH') : 'ไม่มีข้อมูล'}`;
+            document.getElementById('popup-time').textContent = `Time: ${time ? time.slice(0, 5) : 'ไม่ระบุ'}`;
+
+            
+
+            document.getElementById("process-popup").style.display = "flex";
+
+            if (!map) {
+                map = L.map('map').setView([lat, lng], 14);
+
+                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+
+                marker = L.marker([lat, lng]).addTo(map);
+            }else{
+                map.setView([lat, lng], 14);
+                marker.setLatLng([lat, lng]);
+            }
+
+        }
+
+        function closeProcess() {
+            document.getElementById("process-popup").style.display = "none";
+        }
+
+
+        function openPopup(){
+            document.getElementById("popup").style.display = "flex";
+        }
+
+        function closePopup(){
+            document.getElementById("popup").style.display = "none";
+
+            // 1. เคลียร์ค่าในช่อง Input และ Dropdown ของแถวแรกสุดให้กลับเป็นค่าเริ่มต้น
+            const firstRow = document.querySelector('#waste-input .row');
+            if (firstRow) {
+                firstRow.querySelector('.waste-types').value = 'เลือก';
+                firstRow.querySelector('input[type="text"]').value = '';
+            }
+
+            // 2. ลบแถวขยะที่ถูกกดเพิ่ม (+ เพิ่มรายการ) ออกให้หมด เหลือไว้แค่แถวแรกสุดแถวเดียว
+            const container = document.getElementById('waste-input');
+            const rows = container.querySelectorAll('.row');
+            // วนลูปเริ่มจากแถวที่ 2 เป็นต้นไปแล้วลบทิ้ง
+            for (let i = 1; i < rows.length; i++) {
+                rows[i].remove();
+            }
+        }
+
+        function addWasteRow() {
+        // ดึงตัวกล่องแม่ และดึงเนื้อหาจาก Template
+            const container = document.getElementById('waste-input');
+            const template = document.getElementById('waste-tpl').content;
+    
+    // โคลน (Clone) กล่องใหม่ขึ้นมา
+            const newRow = template.cloneNode(true);
+    
+    // นำกล่องใหม่ไปต่อท้ายในกล่องแม่
+            container.appendChild(newRow);
+        }
+
+        async function Process() {
+    // 1. ดึงกล่องรายการทั้งหมดที่อยู่ใน Form
+            const rows = document.querySelectorAll('#waste-input .row');
+            let wasteData = [];
+
+    // 2. วนลูปเพื่อเก็บข้อมูลแต่ละแถว
+            rows.forEach(row => {
+                const wasteName = row.querySelector('.waste-types').value;
+                const weightInput = row.querySelector('input[type="text"]').value;
+                const weight = parseFloat(weightInput);
+
+        // ตรวจสอบว่าผู้ใช้เลือกขยะและกรอกตัวเลขถูกต้อง
+                if (wasteName !== 'เลือก' && !isNaN(weight) && weight > 0) {
+                    wasteData.push({ 
+                        waste_name: wasteName, 
+                        weight: weight 
+                    });
+                }
+            });
+
+    // ตรวจสอบว่ามีข้อมูลถูกเลือกอย่างน้อย 1 รายการ
+            if (wasteData.length === 0) {
+                alert('กรุณาเลือกประเภทขยะและกรอกน้ำหนักให้ถูกต้องอย่างน้อย 1 รายการ');
+                return;
+            }
+
+    // 3. ส่งข้อมูลไปให้ Backend คำนวณ (สมมติว่า API ของคุณชื่อ /api/process-waste)
+            try {
+                const response = await fetch('/api/process-waste', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ booking_id: nowBookingId, items: wasteData }) 
+                }); 
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert(`บันทึกสำเร็จ! ราคารวมทั้งหมด: ${result.total_price} บาท`);
+                    closePopup();    // ปิดหน้าฟอร์ม
+                    closeProcess();  // ปิดหน้า Detail
+                    loaddetail(); 
+                } else {
+                    alert('เกิดข้อผิดพลาด: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error submitting data:', error);
+            }
+        }
+
+    
+        async function sendNoti(alertType) {
+            try {
+                const response = await fetch('/api/send-alert', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        booking_id: nowBookingId, // แก้ไขตรงนี้ให้ตรงกับ Backend
+                        type: alertType 
+                    }) 
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('ส่งแจ้งเตือนให้ลูกค้าสำเร็จ!');
+                } else {
+                    alert('ไม่สามารถส่งแจ้งเตือนได้: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ');
+            }
+        }
+
+    </script>
+</body>
+</html>

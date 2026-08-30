@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReBin</title>
+    <link rel="stylesheet" href="index.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+    <div class="container">
+        <div class="green-panel">
+            <div class="greenP-text">
+                <h1>Welcome to ReBin</h1>
+                
+            </div>
+            <div class="logo">
+                <img src="img/mintLOGO.png" >
+            </div>
+            <div class="greenP-text">
+                <p>don't have an account?</p>
+            </div>
+                
+            <button onclick="document.location='signin.html'" class="signin-button">Sign Up</button>
+
+        </div>
+        <div class="white-panel">
+            <div class="whiteP-text">
+                <h2>Log In to ReBin</h2>
+            </div>
+            <form id="loginForm">
+                <div class="input">
+                    <label>Username</label>
+                    <input type="text" id="username" required>
+                </div>
+                
+                <div class="input">
+                    <label>Password</label>
+                    <input type="password" id="password" required>
+                </div>
+                
+                <button class="login-button">LOG IN</button>
+                    
+            
+            </form>
+            
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value; 
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert(data.message || 'Login successful');
+    
+    
+                    localStorage.setItem('userId', data.user.id);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+
+                    if (data.user.role === 'admin') {
+                        window.location.href = 'adminDashboard.html'; 
+                    } else {
+                        window.location.href = 'main.html';
+                    }
+
+                } else {
+                    alert(data.error || 'Login failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+
+
+            
+        })
+    </script>
+    
+</body>         
+</html>

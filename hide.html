@@ -1,0 +1,45 @@
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+
+
+
+<script>
+    // สร้างแผนที่
+        const map = L.map('map').setView([13.7563, 100.5018], 13);
+        
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // เพิ่มกล่องค้นหาลงในแผนที่
+        L.Control.geocoder({
+            defaultMarkGeocode: true
+        }).addTo(map);
+
+        
+        let marker;
+
+        // 2. ดักจับการคลิกบนแผนที่
+        map.on('click', function(e) {
+        const latlng = e.latlng; 
+
+        if (marker) {
+        // ถ้ามีหมุดอยู่แล้ว ให้ย้ายไปตำแหน่งใหม่
+            marker.setLatLng(latlng);
+        } else {
+        // ถ้ายังไม่มีหมุด ให้สร้างขึ้นมาใหม่
+            marker = L.marker(latlng).addTo(map);
+        }
+
+        });
+</script>
+
+<div class="search">
+    <input type="text" id="search-box" placeholder="Search for locations...">
+    <button id="search-button" onclick="searchAddress()">Search</button>
+</div>

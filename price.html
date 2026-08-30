@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReBin</title>
+    <link rel="stylesheet" href="price.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="top-bar">
+            <div class="logo" onclick="document.location='main.html'">
+                <img src="img/white-logo.png">
+            </div>
+
+            <div class="main" onclick="document.location='main.html'">
+                <p>Main</p>
+            </div>  
+
+            <div class="space1"><p>|</p></div>
+
+            <div class="price" onclick="location.reload()">
+                <p>Price</p>
+            </div>
+
+            <div class="space2"><p>|</p></div>
+
+            <div class="booking" onclick="document.location='booking.html'">
+                <p>Booking</p>
+            </div>
+
+            <div class="space3"><p>|</p></div>
+                           
+            <div class="wallet" onclick="document.location='wallet.html'">
+                <p>Wallet</p>
+            </div>
+            
+            <div class="space4"><p>|</p></div>
+
+            <div class="exit" onclick="openExitPopup()">
+                <img src="img/square-arrow-right-exit.png">
+            </div>                   
+        </div>
+
+        <div class="head-content">
+            <h1>ราคาขยะรีไซเคิล ประจำวัน</h1>
+        </div>
+
+        
+        <div class="white-panel1">
+            <div class="whiteP-text">
+                <h2>พลาสติก-กระดาษ</h2>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>รายการ</th>
+                        <th>ราคา</th>
+                    </tr>
+                </thead>
+                <tbody id="plastic_paper-body">
+               
+                </tbody>
+            </table>
+        </div>
+
+        
+        <div class="white-panel2">
+            <div class="whiteP-text">
+                <h2>โลหะ</h2>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>รายการ</th>
+                        <th>ราคา</th>
+                    </tr>
+                </thead>
+                <tbody id="metal-body">
+
+                </tbody>
+            </table>
+        </div>           
+
+        
+        <div class="white-panel3">
+            <div class="whiteP-text">
+                <h2>แก้ว</h2>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>รายการ</th>
+                        <th>ราคา</th>
+                    </tr>
+                </thead>
+                <tbody id="glass-body">
+                </tbody>
+            </table>
+        </div>
+
+
+        <div class="white-panel4">
+            <div class="whiteP-text">
+                <h2>เหล็ก</h2>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>รายการ</th>
+                        <th>ราคา</th>
+                    </tr>
+                </thead>
+                <tbody id="iron-body">
+                </tbody>
+            </table>
+        </div>
+
+    
+        <div id="pop-up-exit" class="exitPopup" style="display: none;">
+            <div class="exitPopup-content">
+                <h3 style="color: #4c8172;">Are you sure you want to exit?</h3>
+                <div class="exitPopup-buttons">
+                    <button class="yes-button" onclick="document.location='index.html'">Yes</button>
+                    <button class="no-button" onclick="closeExitPopup()">No</button>
+                </div>
+            </div>
+        </div>
+    </div>  
+
+    <script>
+        function openExitPopup() {
+            document.getElementById("pop-up-exit").style.display = "flex";
+        }
+
+        function closeExitPopup() {
+            document.getElementById("pop-up-exit").style.display = "none";
+        }
+
+        
+        async function waste_prices() {
+            try {
+                
+                const response = await fetch('/api/prices');
+                const result = await response.json();   
+                
+                if (response.ok) {
+                    const items = Array.isArray(result) ? result : (result.data || []);
+
+                    const types = (elementID, typesName) => {
+                        const tbody = document.getElementById(elementID);
+                        tbody.innerHTML = ''; 
+                        items.filter(item => item.types === typesName).forEach(item => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${item.waste_name}</td>
+                                <td>${item.price_per_kg} บาท/กก.</td>
+                            `;
+                            tbody.appendChild(row);
+                        });
+                    };
+
+                    types('plastic_paper-body', 'พลาสติก-กระดาษ');
+                    types('metal-body', 'โลหะ');
+                    types('glass-body', 'แก้ว');
+                    types('iron-body', 'เหล็ก');
+                   
+
+                    
+                } else {
+                    console.error('API Error:', result.error || result.message);
+                }
+            } catch (error) {
+                console.error('Fetch Error:', error);
+            }
+        }
+
+        window.onload = waste_prices;
+    </script>
+</body>
+</html>

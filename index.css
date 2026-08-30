@@ -1,0 +1,126 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #a1d0be;
+    font-family: "Chakra Petch", sans-serif;
+    font-weight: 400;
+}
+button {
+  font-family: "Chakra Petch", sans-serif;
+  font-weight: 500; 
+}
+
+input {
+  font-family: "Chakra Petch", sans-serif;
+  font-weight: 500;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+.signin-button {
+    background-color: white; 
+    border: none;
+    color: #2b6c25;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 30px;
+}
+.login-button {
+    background-color: #4c8172;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 50px;
+    cursor: pointer;
+}
+
+.green-panel {
+    background-color: #4c8172;
+    color: white;
+    padding: 40px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    border-radius: 30px;
+    min-height: 500px;
+}
+.green-text h1 {
+    font-size: 32px;
+    margin-bottom: 5px;
+}
+.green-text p {
+    font-size: 12px;
+    opacity: 0.8;
+    margin-bottom: auto;
+}
+.logo img{
+    width: 300px;
+    margin: 5px;
+}
+.white-panel {
+    background-color: #ffffff; 
+    color: black;
+    padding: 40px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    border-radius: 30px;
+    flex: 0.5;
+    min-height: 500px;
+}
+.whiteP-text h2 {
+    color: #4c8172;
+    font-size: 46px;
+    margin-bottom: 50px;
+}
+.white-panel form {
+    display: grid;
+    gap: 30px;
+
+
+}
+.input{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: none;
+    width: 100%;
+}
+.input input {
+    margin-bottom: 30px;
+    border-radius: 30px;
+    padding: 12px 18px;
+    background-color: #d2ddd9;
+    outline: none;
+    font-size: 28px;
+    display: flex;
+    border: none;
+    
+}
+.input label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 18px;
+    text-align: left;
+    color: #4c8172;
+    font-weight: bold;
+    margin-left: 20px;
+}

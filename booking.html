@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReBin</title>
+    <link rel="stylesheet" href="booking.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+    <!-- map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <!-- line -->
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="top-bar">
+            <div class="logo" onclick="document.location='main.html'">
+                <img src="img/white-logo.png">
+            </div>
+
+            <div class="main" onclick="document.location='main.html'">
+                <p>Main</p>
+            </div>  
+
+            <div class="space1"><p>|</p></div>
+
+            <div class="price" onclick="document.location='price.html'">
+                <p>Price</p>
+            </div>
+
+            <div class="space2"><p>|</p></div>
+
+            <div class="booking" onclick="location.reload()">
+                <p>Booking</p>
+            </div>
+
+            <div class="space3"><p>|</p></div>
+                           
+            <div class="wallet" onclick="document.location='wallet.html'">
+                <p>Wallet</p>
+            </div>
+            
+            <div class="space4"><p>|</p></div>
+
+            <div class="exit" onclick="openExitPopup()">
+                <img src="img/square-arrow-right-exit.png">
+            </div>                   
+        </div>
+
+        <div class="box">
+            <h1>Booking</h1>
+            
+            <h3>สถานที่นัดหมาย</h3>
+            <div id="map"></div>
+            
+            <div class="book-detail">
+                <h2>ข้อมูลการนัดหมาย</h2>
+                <form id="bookingDT">
+                    <p>ชื่อผู้นัดหมาย</p>
+                    <input type="text" id="bookname">
+                    <p>เบอร์โทร</p>
+                    <input type="text" id="tel">
+                    <p>วันที่นัดหมาย</p>
+                    <input type="date" id="appointment-date">
+                    <p>เวลาที่นัดหมาย</p>
+                    <input type="time" id="appointment-time">
+                </form>
+            </div>
+            <button class="book-button" onclick="openCfPopup()">Book</button>
+        </div>
+
+        <div id="pop-up-exit" class="exitPopup">
+            <div class="exitPopup-content">
+                <h3 style="color: #4c8172;">Are you sure you want to exit?</h3>
+                <div class="exitPopup-buttons">
+                    <button class="yes-button" onclick="document.location='index.html'">Yes</button>
+                    <button class="no-button" onclick="closeExitPopup()">No</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="pop-up-cf" class="cfPopup">
+            <div class="cfPopup-content">
+                <h3 style="color: #4c8172;">Confirm Booking?</h3>
+                <div class="cfPopup-button">
+                    <button class="cf-button" onclick="CFbooking()">Confirm</button> 
+                    <button class="no-cf-button" onclick="closeCfPopup()">Cancle</button>
+                </div>
+            </div>
+        </div>
+    </div>  
+
+    <script>
+        function openExitPopup() {
+            document.getElementById("pop-up-exit").style.display = "flex";
+        }
+
+        function closeExitPopup() {
+            document.getElementById("pop-up-exit").style.display = "none";
+        }
+
+        function openCfPopup(){
+            document.getElementById("pop-up-cf").style.display = "flex";
+        }
+
+        function closeCfPopup(){
+            document.getElementById("pop-up-cf").style.display = "none";
+        }
+
+        const map = L.map('map').setView([13.736717, 100.523186], 13);
+        
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        let marker;
+        let setLat = null;
+        let setLng = null;
+
+        
+        map.on('click', function(e) {
+            setLat = e.latlng.lat;
+            setLng = e.latlng.lng;
+            
+            if (marker) {
+                marker.setLatLng([setLat, setLng]);
+            } else {
+                marker = L.marker([setLat, setLng]).addTo(map);
+            }
+
+            marker.bindPopup(`พิกัดที่เลือก: Lat: ${setLat.toFixed(5)} Lng: ${setLng.toFixed(5)}`).openPopup();
+        });
+
+        
+        const geocoder = L.Control.geocoder({
+            defaultMarkGeocode: false 
+        })
+        .on('markgeocode', function(e) {
+            const latlng = e.geocode.center;
+            setLat = latlng.lat;
+            setLng = latlng.lng;
+
+            map.setView(latlng, 14);
+            if (marker) {
+                marker.setLatLng([setLat, setLng]);
+            } else {
+                marker = L.marker([setLat, setLng]).addTo(map);
+            }
+            marker.bindPopup(`พิกัดที่เลือก: Lat: ${setLat.toFixed(5)} Lng: ${setLng.toFixed(5)}`).openPopup();
+        })
+        .addTo(map);
+
+        let lineUserId = null;
+
+        async function initLIFF() {
+            try {
+                await liff.init({ liffId: "2011044286-bZoOlruD" });
+                if (liff.isLoggedIn()) {
+                    const profile = await liff.getProfile();
+                    lineUserId = profile.userId; 
+
+                    // ดึง userId ของระบบที่เก็บไว้ตอน Login (จากหน้า Login)
+                    const userId = localStorage.getItem('userId');
+
+                    if (userId && lineUserId) {
+                        // ส่งไปบันทึก line_id ลงในตาราง users ทันที
+                        await fetch('/api/update-line-id', {
+                            method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId: userId, lineUserId: lineUserId })
+                        });
+                    }
+
+                } else {
+                    liff.login();
+                }
+            } catch (err) {
+                console.error("LIFF Init Error:", err);
+            }
+        }
+        
+        initLIFF();
+
+
+        async function CFbooking() {
+            const bookname = document.getElementById('bookname').value;
+            const tel = document.getElementById('tel').value;
+            const date = document.getElementById('appointment-date').value;
+            const time = document.getElementById('appointment-time').value;
+            const userId = localStorage.getItem('userId');
+
+            if (!bookname.trim()) {
+                alert('กรุณาใส่ชื่อผู้จอง');
+                closeCfPopup();
+                return;
+                
+            }
+
+            if (!tel.trim()) {
+                alert('กรุณากรอกเบอร์โทรผู้จอง');
+                closeCfPopup();
+                return;
+                
+            }
+            
+            if (!setLat || !setLng) {
+                alert('กรุณาเลือกสถานที่นัดหมายบนแผนที่');
+                closeCfPopup(); 
+                return;
+                
+            }
+
+            if (!date || !time) {
+                alert('กรุณากรอกวันที่และเวลานัดหมาย');
+                closeCfPopup(); 
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/cfBooking', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        userId: userId,
+                        lineUserId: lineUserId,
+                        bookname: bookname,
+                        booktel: tel,
+                        date: date, 
+                        time: time,
+                        latitude: setLat,
+                        longitude: setLng
+                    })
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert(data.message || 'ยืนยันการจอง');
+                    closeCfPopup();
+                    window.location.href = 'main.html';
+                } else {
+                    alert(data.error || 'ไม่สามารถยืนยันการจองได้ โปรดลองใหม่!');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
