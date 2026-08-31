@@ -165,11 +165,9 @@
                     const profile = await liff.getProfile();
                     lineUserId = profile.userId; 
 
-                    // ดึง userId ของระบบที่เก็บไว้ตอน Login (จากหน้า Login)
                     const userId = localStorage.getItem('userId');
 
                     if (userId && lineUserId) {
-                        // ส่งไปบันทึก line_id ลงในตาราง users ทันที
                         await fetch('/api/update-line-id', {
                             method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -199,21 +197,18 @@
                 alert('กรุณาใส่ชื่อผู้จอง');
                 closeCfPopup();
                 return;
-                
             }
 
             if (!tel.trim()) {
                 alert('กรุณากรอกเบอร์โทรผู้จอง');
                 closeCfPopup();
                 return;
-                
             }
             
             if (!setLat || !setLng) {
                 alert('กรุณาเลือกสถานที่นัดหมายบนแผนที่');
                 closeCfPopup(); 
                 return;
-                
             }
 
             if (!date || !time) {

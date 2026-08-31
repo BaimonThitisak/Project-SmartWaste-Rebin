@@ -151,16 +151,16 @@ app.post('/api/process-waste', async (req, res) => {
         return res.status(400).json({ error: 'ข้อมูลไม่ครบถ้วน' });
     }
 
-    // เรียกใช้ฟีเจอร์ Promise ของ mysql2 เพื่อให้ใช้ async/await ได้ง่ายๆ
+    
     const promiseDb = db.promise(); 
 
     try {
-        await promiseDb.query('BEGIN'); // เริ่ม Transaction เผื่อมีข้อผิดพลาดจะได้ยกเลิกทัน
+        await promiseDb.query('BEGIN'); 
         let totalPrice = 0;
         let summaryText = '♻️ สรุปรายการรับซื้อขยะ Project Rebin\n\n'; 
 
         for (let item of items) {
-            // 1. ดึงราคาล่าสุดของขยะแต่ละประเภท
+            
             const [rows] = await promiseDb.query('SELECT price_per_kg FROM waste_types WHERE waste_name = ?', [item.waste_name]);
             
             if (rows.length === 0) {
@@ -173,7 +173,7 @@ app.post('/api/process-waste', async (req, res) => {
 
             summaryText += `- ${item.waste_name}: ${item.weight} กก. (${total_price.toFixed(2)} บาท)\n`;
 
-            // 2. บันทึกลงตาราง booking_details (คุณสามารถปรับชื่อคอลัมน์ให้ตรงกับฐานข้อมูลจริงได้)
+            
             await promiseDb.query(
                 'INSERT INTO booking_details (booking_id, waste_name, weight, price_per_kg, total_price) VALUES (?, ?, ?, ?, ?)',
                 [booking_id, item.waste_name, item.weight, price_per_kg, total_price]
@@ -181,7 +181,7 @@ app.post('/api/process-waste', async (req, res) => {
         }
         summaryText += `\n💰 ราคารวมทั้งหมด: ${totalPrice.toFixed(2)} บาท\n📌 สถานะ: ทำรายการเสร็จสิ้น (Complete)`;
 
-        // 3. อัปเดตสถานะการจองในตาราง bookings ว่าจัดการเสร็จแล้ว
+        
         await promiseDb.query('UPDATE bookings SET status = ? WHERE id = ?', ['complete', booking_id]);
 
         const [userRows] = await promiseDb.query(`
@@ -194,7 +194,7 @@ app.post('/api/process-waste', async (req, res) => {
         if (userRows.length > 0) {
             const userId = userRows[0].user_id;
 
-            // 5. อัปเดตยอดเงินเข้า Wallet ของลูกค้านี้ (เอาของเดิม + ยอดใหม่)
+            
             await promiseDb.query(
                 'UPDATE users SET wallet_balance = IFNULL(wallet_balance, 0) + ? WHERE id = ?',
                 [totalPrice, userId]
@@ -239,7 +239,7 @@ app.post('/api/process-waste', async (req, res) => {
         res.json({ message: 'บันทึกสำเร็จ', total_price: totalPrice.toFixed(2) });
 
     } catch (err) {
-        await promiseDb.query('ROLLBACK'); // หากมี Error ให้ยกเลิกสิ่งที่ทำมาทั้งหมด
+        await promiseDb.query('ROLLBACK'); 
         console.error('Error in process-waste:', err);
         res.status(500).json({ error: err.message });
     }
@@ -266,7 +266,7 @@ app.post('/api/send-alert', async (req, res) => {
     
     let messageText = '';
 
-    // เช็กเคสว่าส่งมาจากปุ่มไหน
+    
     switch (type) {
         case 'coming':
             messageText = '🚗 เจ้าหน้าที่กำลังเดินทางไปหา! \n โปรดเตรียมขยะรอไว้ให้เรียบร้อย';
@@ -277,7 +277,7 @@ app.post('/api/send-alert', async (req, res) => {
     try {
         const promiseDb = db.promise();
         
-        // 1. ค้นหา line_id ของลูกค้าจาก booking_id ที่ส่งมา
+        
         const [userRows] = await promiseDb.query(`
             SELECT u.line_id 
             FROM bookings b 
@@ -285,14 +285,13 @@ app.post('/api/send-alert', async (req, res) => {
             WHERE b.id = ?
         `, [booking_id]);
 
-        // ตรวจสอบว่ามี line_id ในฐานข้อมูลหรือไม่
+       
         if (userRows.length === 0 || !userRows[0].line_id) {
             return res.status(404).json({ error: 'ไม่พบข้อมูล LINE ID ของลูกค้ารายนี้' });
         }
 
         const lineUserId = userRows[0].line_id;
 
-        // 2. ส่งข้อความผ่าน LINE API
         await fetch('https://api.line.me/v2/bot/message/push', {
             method: 'POST',
             headers: {
